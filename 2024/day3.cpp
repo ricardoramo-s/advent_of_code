@@ -1,11 +1,14 @@
+#include "chrono"
+#include "fstream"
 #include "iostream"
 #include "regex"
-#include "fstream"
 #include "sstream"
-#include "chrono"
 
-int main() {
+int main()
+{
     namespace ch = std::chrono;
+
+    auto input_start = ch::high_resolution_clock::now();
 
     std::string content;
 
@@ -13,7 +16,8 @@ int main() {
     {
         std::ifstream input{"../2024/input/day3.txt"};
 
-        if (!input.is_open()) {
+        if (!input.is_open())
+        {
             std::perror("Unable to open file:");
             return 1;
         }
@@ -23,13 +27,16 @@ int main() {
         content = buffer.str();
     }
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = ch::high_resolution_clock::now();
+    std::println("time taken to parse input: {}", ch::duration_cast<ch::microseconds>(start - input_start));
+    std::println();
+
     std::regex pattern{R"((?:mul\((\d+),(\d+)\)))"};
     unsigned long result = 0;
 
-
     std::string search{content};
-    for (std::smatch matches; std::regex_search(search, matches, pattern); search = matches.suffix()) {
+    for (std::smatch matches; std::regex_search(search, matches, pattern); search = matches.suffix())
+    {
         result += std::stoi(matches[1]) * std::stoi(matches[2]);
     }
 
@@ -43,18 +50,22 @@ int main() {
     bool active = true;
 
     search = std::string{content};
-    for (std::smatch matches; std::regex_search(search, matches, pattern); search = matches.suffix()) {
-        if (matches[3].matched) {
+    for (std::smatch matches; std::regex_search(search, matches, pattern); search = matches.suffix())
+    {
+        if (matches[3].matched)
+        {
             active = (matches[3] == "do");
         }
-        else if (active) {
+        else if (active)
+        {
             result += std::stoi(matches[1]) * std::stoi(matches[2]);
         }
     }
 
     std::cout << std::endl;
     std::cout << std::format("enabled multiplications only: {}\n", result);
-    std::cout << std::format("time taken: {}", ch::duration_cast<ch::milliseconds>(ch::high_resolution_clock::now() - first_end));
+    std::cout << std::format("time taken: {}",
+                             ch::duration_cast<ch::milliseconds>(ch::high_resolution_clock::now() - first_end));
 
     return 0;
 }
